@@ -1,0 +1,35 @@
+<!DOCTYPE html>
+<head>
+  <meta charset="utf-8">
+  <meta http-equiv="X-UA-Compatible" content="IE=edge">
+  <title>kzFormDaimyo</title>
+  <meta name="description" content="">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <link rel="stylesheet" href="content/styles.css">
+</head>
+<body ng-app="kzTestSuite">
+
+    <form name="test" ng-controller="KzController as kz" novalidate>
+        <h1>kzFormsDaimyo</h1>
+        <div kz-wrap class="control">
+            <label kz-rq="rq-dot" class="control__label">First name:</label>
+            <input kz-control name="fn" ng-model="kz.firstName" class="control__item" type="text" ng-minlength="3" required />
+            <div ng-messages="$errors" role="alert">
+                <div ng-message="required">field is required</div>
+                <div ng-message="minlength">too short</div>
+            </div>
+        </div>
+        <div kz-wrap class="control">
+            <label kz-rq class="control__label">Last name:</label>
+            <input kz-control ng-model="kz.lastName" class="control__item" type="text" required />
+            {{$errors}}
+        </div>
+
+        <button class="point" type="submit">Submit</button>
+    </form>
+
+    <script src="js/angular.js"></script>
+    <script src="js/kz-form-daimyo.js"></script>
+    <script src="js/helpers.js"></script>
+</body>
+</html>

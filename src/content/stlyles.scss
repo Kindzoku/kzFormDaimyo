@@ -1,0 +1,72 @@
+$blue: #6a84c8;
+
+* {
+  font-family: sans-serif;
+  font-size: 14px;
+}
+
+h1 {
+  font: {
+    size: 3em;
+    weight: bold;
+  }
+
+  margin: 0;
+  padding: 10px 0;
+}
+
+.point {
+  cursor: pointer;
+}
+
+form {
+  width: 600px;
+  background-color: honeydew;
+  margin: 20px auto;
+  padding: 10px 40px;
+  border: 2px dashed silver;
+}
+
+button {
+  background-color: $blue;
+  border: 0;
+  padding: 5px 10px;
+  color: white;
+  border-radius: 5px;
+  &:hover {
+    background-color: darken($blue, 30%);
+  }
+  &:focus {
+    outline: 0;
+  }
+}
+
+.control {
+  margin-bottom: 10px;
+
+  &__label {
+    display: block;
+  }
+
+  &__item {
+    height: 1.8em;
+    padding: 0 10px;
+    border: 2px solid silver;
+    &:focus {
+      border: 2px solid $blue;
+    }
+  }
+}
+
+.rq-dot {
+  &:after {
+    content: '●';
+    margin-left: 5px;
+    color: red;
+    font-size: 12px;
+  }
+}
+
+.kz-rq-invalid {
+  color: red;
+}

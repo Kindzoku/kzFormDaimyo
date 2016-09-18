@@ -1,0 +1,19 @@
+{
+  "name": "kzFormDaimyo",
+  "private": true,
+  "version": "0.0.0",
+  "description": "Rightful forms commander",
+  "repository": "",
+  "license": "MIT",
+  "devDependencies": {
+    "angular": "^1.5.8",
+    "gulp-concat": "^2.6.0",
+    "gulp-iife": "^0.3.0",
+    "gulp-sass": "^2.3.2",
+    "gulp-uglify": "^2.0.0"
+  },
+  "scripts": {},
+  "dependencies": {
+    "angular-messages": "^1.5.8"
+  }
+}
