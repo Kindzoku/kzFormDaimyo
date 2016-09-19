@@ -9,20 +9,25 @@
 </head>
 <body ng-app="kzTestSuite">
 
-    <form name="test" ng-controller="KzController as kz" novalidate>
+    <form kz-root ng-controller="KzController as kz" novalidate>
         <h1>kzFormsDaimyo</h1>
-        <div kz-wrap class="control">
+        <div kz-unit class="control">
             <label kz-rq="rq-dot" class="control__label">First name:</label>
-            <input kz-control name="fn" ng-model="kz.firstName" class="control__item" type="text" ng-minlength="3" required />
+            <input kz-control name="fn" ng-model="kz.firstName" class="control__item" type="text" kz-rules="kz.firstNameRules" />
+            <ul ng-if="$errors">
+                <li ng-repeat="(error, text) in $errors">{{text}}</li>
+            </ul>
             <div ng-messages="$errors" role="alert">
-                <div ng-message="required">field is required</div>
+                <div ng-message="required">ng-message required</div>
                 <div ng-message="minlength">too short</div>
             </div>
         </div>
-        <div kz-wrap class="control">
+        <div kz-unit class="control">
             <label kz-rq class="control__label">Last name:</label>
-            <input kz-control ng-model="kz.lastName" class="control__item" type="text" required />
-            {{$errors}}
+            <input kz-control ng-model="kz.lastName" class="control__item" type="text" kz-rules="kz.lastNameRules" />
+            <ul ng-if="$errors">
+                <li ng-repeat="(error, text) in $errors">{{text}}</li>
+            </ul>
         </div>
 
         <button class="point" type="submit">Submit</button>

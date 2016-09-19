@@ -1,12 +1,12 @@
-angular.module('kzFormDaimyo').directive('kzRq', kzRq);
+angular.module('kz.formDaimyo').directive('kzRq', kzRq);
 
 kzRq.$inject = ['$kz'];
 function kzRq($kz){
 
     return {
 
-        require: '^kzWrap',
-        link: function(scope, elem, attr, kzWrapCtrl){
+        require: '^kzUnit',
+        link: function(scope, elem, attr, kzUnitCtrl){
             var canValidate = $kz.requiredOnInit, // is required check enabled on init
                 errorClass = attr.kzRq || 'kz-rq-invalid', // class for required - true
                 watchers = {};
@@ -14,13 +14,13 @@ function kzRq($kz){
             if(attr.kzRqOninit) canValidate = attr.kzRqOninit === 'true';
 
             scope.$evalAsync(function(){
-                var initWatch = scope.$watch(
+                watchers.init = scope.$watch(
                     function(){
-                        return kzWrapCtrl.model; // waiting kzWrap receive a model
+                        return kzUnitCtrl.model; // waiting kzWrap receive a model
                     },
                     function(model){
                         if(!model) return;
-                        initWatch(); // killing the watcher as it doesn't required anymore
+                        watchers.init(); // killing the watcher as it doesn't required anymore
                         initDone(model); // initializing logic
                     }
                 );
@@ -57,7 +57,7 @@ function kzRq($kz){
                     function(){
                         return model.$error.required + canValidate;
                     },
-                    function(val){
+                    function(){
                         if(!canValidate) return;
                         elem.toggleClass(errorClass, model.$error.required || false);
                     }

@@ -1,16 +1,16 @@
-angular.module('kzFormDaimyo').directive('kzControl', kzControl);
+angular.module('kz.formDaimyo').directive('kzControl', kzControl);
 
 function kzControl(){
 
     return {
 
-        require: ['^kzWrap', 'ngModel'],
+        require: ['^kzUnit', 'ngModel'],
         link: function(scope, element, attrs, ctrls){
             var
-                kzWrap = ctrls[0],
+                kzUnit = ctrls[0],
                 ngModel = ctrls[1];
 
-            kzWrap.setModel(ngModel);
+            kzUnit.setModel(ngModel);
         }
     };
 }

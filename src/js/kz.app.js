@@ -1,1 +1,1 @@
-angular.module('kzFormDaimyo', []);
+angular.module('kz.formDaimyo', []);

@@ -1,9 +1,10 @@
 {
   "name": "kzFormDaimyo",
-  "private": true,
-  "version": "0.0.0",
-  "description": "Rightful forms commander",
-  "repository": "",
+  "private": false,
+  "version": "0.0.7",
+  "description": "Generic form validator helpers for AngularJS. Get rid of field names necessity.",
+  "repository": "https://github.com/Kindzoku/kzFormDaimyo",
+  "keywords": "forms, client-side, browser, framework, angular",
   "license": "MIT",
   "devDependencies": {
     "angular": "^1.5.8",
@@ -11,10 +12,11 @@
     "gulp-concat": "^2.6.0",
     "gulp-iife": "^0.3.0",
     "gulp-sass": "^2.3.2",
-    "gulp-uglify": "^2.0.0"
+    "gulp-uglify": "^2.0.0",
+    "angular-messages": "^1.5.8"
   },
   "scripts": {},
   "dependencies": {
-    "angular-messages": "^1.5.8"
+
   }
 }

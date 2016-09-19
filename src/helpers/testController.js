@@ -1,6 +1,6 @@
 (function(){
 
-    angular.module('kzTestSuite', [ 'kzFormDaimyo', 'ngMessages' ]);
+    angular.module('kzTestSuite', [ 'kz.formDaimyo', 'ngMessages' ]);
 
     angular.module('kzTestSuite').config(['$kzProvider', function($kzProvider){
         $kzProvider.requireOnInit(false);
@@ -17,8 +17,16 @@
             vm.firstName = '';
         }, 1000);
 
-        vm.lastName = 'Black';
+        vm.firstNameRules = [
+            { type: 'required', value: true, error: 'Field is required' },
+            { type: 'pattern', value: /\d/, error: 'Digits only!' }
+        ];
 
+        vm.lastName = 'Black';
+        vm.lastNameRules = [
+            { type: 'required', value: true, error: 'Field is required' },
+            { type: 'minlength', value: 5, error: 'More than 5 characters!' }
+        ];
     }
 
 })();

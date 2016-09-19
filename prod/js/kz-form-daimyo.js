@@ -1,28 +1,35 @@
 ;(function() {
 "use strict";
 
-angular.module('kzFormDaimyo', []);
-angular.module('kzFormDaimyo').directive('kzControl', kzControl);
+angular.module('kz.formDaimyo', []);
+angular.module('kz.formDaimyo').directive('kzControl', kzControl);
 
 function kzControl(){
 
     return {
 
-        require: ['^kzWrap', 'ngModel'],
+        require: ['^kzUnit', 'ngModel'],
         link: function(scope, element, attrs, ctrls){
             var
-                kzWrap = ctrls[0],
+                kzUnit = ctrls[0],
                 ngModel = ctrls[1];
 
-            kzWrap.setModel(ngModel);
+            kzUnit.setModel(ngModel);
         }
     };
 }
-angular.module('kzFormDaimyo').provider('$kz', kzProvider);
+angular.module('kz.formDaimyo').provider('$kz', kzProvider);
 
 function kzProvider(){
 
     var requireOnInit = false;
+
+    var rules = {
+        'required': 'ng-required',
+        'pattern': 'ng-pattern',
+        'minlength': 'ng-minlength',
+        'maxlength': 'ng-maxlength'
+    };
 
     return {
 
@@ -30,24 +37,47 @@ function kzProvider(){
             requireOnInit = isRequired || false;
         },
 
+        addRuleType: function(name, alias){
+            rules[name] = alias;
+        },
+
         $get: function(){
             return {
-                requiredOnInit: requireOnInit
+                requiredOnInit: requireOnInit,
+                rules: rules
             };
         }
 
     };
 
 }
-angular.module('kzFormDaimyo').directive('kzRq', kzRq);
+angular.module('kz.formDaimyo').directive('kzRoot', kzRoot);
+
+function kzRoot() {
+    return {
+        scope: true,
+        controller: kzRootController
+    };
+}
+
+kzRootController.$inject = ['$scope'];
+function kzRootController($scope) {
+    var vm = this;
+    vm.models = [];
+
+    vm.setModel = function (model) {
+        vm.models.push(model);
+    };
+}
+angular.module('kz.formDaimyo').directive('kzRq', kzRq);
 
 kzRq.$inject = ['$kz'];
 function kzRq($kz){
 
     return {
 
-        require: '^kzWrap',
-        link: function(scope, elem, attr, kzWrapCtrl){
+        require: '^kzUnit',
+        link: function(scope, elem, attr, kzUnitCtrl){
             var canValidate = $kz.requiredOnInit, // is required check enabled on init
                 errorClass = attr.kzRq || 'kz-rq-invalid', // class for required - true
                 watchers = {};
@@ -55,13 +85,13 @@ function kzRq($kz){
             if(attr.kzRqOninit) canValidate = attr.kzRqOninit === 'true';
 
             scope.$evalAsync(function(){
-                var initWatch = scope.$watch(
+                watchers.init = scope.$watch(
                     function(){
-                        return kzWrapCtrl.model; // waiting kzWrap receive a model
+                        return kzUnitCtrl.model; // waiting kzWrap receive a model
                     },
                     function(model){
                         if(!model) return;
-                        initWatch(); // killing the watcher as it doesn't required anymore
+                        watchers.init(); // killing the watcher as it doesn't required anymore
                         initDone(model); // initializing logic
                     }
                 );
@@ -98,7 +128,7 @@ function kzRq($kz){
                     function(){
                         return model.$error.required + canValidate;
                     },
-                    function(val){
+                    function(){
                         if(!canValidate) return;
                         elem.toggleClass(errorClass, model.$error.required || false);
                     }
@@ -114,21 +144,86 @@ function kzRq($kz){
     }
 }
 
-angular.module('kzFormDaimyo').directive('kzWrap', kzWrap);
+(function(){
 
-function kzWrap() {
+    angular.module('kz.formDaimyo').directive('kzRules', rules);
+
+    rules.$inject = ['$kz', '$compile', '$parse'];
+    function rules($kz, $compile, $parse) {
+        return {
+            terminal: true,
+            priority: 1500,
+            require: '^kzUnit',
+            compile: function compile(element){
+                element.removeAttr('kz-rules');
+                return {
+                    post: function postLink(scope, iElement, iAttrs, kzUnitCtrl) {
+                        var init = scope.$watch(iAttrs.kzRules, function(val){
+                            if(!val) return;
+                            init();
+                            var rules = $parse(iAttrs.kzRules)(scope);
+                            if(rules) {
+                                var aliases = $kz.rules;
+                                rules.forEach(function (rule) {
+                                    iElement.attr(aliases[rule.type] || rule.type, rule.value);
+                                    kzUnitCtrl.setError(rule.type, rule.error);
+                                });
+                            }
+                            $compile(iElement)(scope);
+
+                        });
+                    }
+                };
+            }
+        };
+    }
+
+})();
+angular.module('kz.formDaimyo').directive('kzUnit', kzUnit);
+
+function kzUnit() {
     return {
         scope: true,
-        controller: kzWrapController
+        require: ['kzUnit', '^?kzRoot'],
+        controller: kzUnitController,
+        link: function(scope, elem, attrs, ctrls){
+            var me = ctrls[0];
+            me.root = ctrls[1];
+        }
     };
 }
 
-kzWrapController.$inject = ['$scope'];
-function kzWrapController($scope) {
-    this.setModel = function (model) {
-        this.model = model;
-        $scope.$errors = model.$error;
+kzUnitController.$inject = ['$scope'];
+function kzUnitController($scope) {
+    var vm = this,
+        errorTexts = {},
+        watchers = {};
+
+
+    vm.setModel = function (model) {
+        vm.model = model;
+        watchers.errors = $scope.$watchCollection(
+            function() {
+                return model.$error;
+            },
+            function(errors) {
+                $scope.$errors = {};
+                Object.keys(errors).map(function(value) {
+                    $scope.$errors[value] = errorTexts[value];
+                });
+            }
+        );
+        if(vm.root) vm.root.setModel(model);
     };
 
+    vm.setError = function (type, error){
+        errorTexts[type] = error;
+    };
+
+    $scope.$on('$destroy', function(){
+        for(var watcher in watchers) {
+            watchers[watcher](); // killing all watchers
+        }
+    });
 }
 }());
